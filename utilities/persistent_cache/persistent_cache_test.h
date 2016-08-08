@@ -124,10 +124,6 @@ class PersistentCacheTierTest : public testing::Test {
 
     while (true) {
       size_t i = key_++;
-      if (!(i % 1024)) {
-        // give a little delay for kernel/file system to do maintenance work
-        Env::Default()->SleepForMicroseconds(100 * 1000);
-      }
       if (i >= max_keys_) {
         break;
       }
