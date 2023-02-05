@@ -448,6 +448,9 @@ Status MemTableList::TryInstallMemtableFlushResults(
     // assigned to flush the oldest memtable, will later wake up and does all
     // the pending writes to manifest, in order.
     if (memlist.empty() || !memlist.back()->flush_completed_) {
+      ROCKS_LOG_BUFFER(log_buffer,
+          "[%s] Level-0 skip as last not flush %" PRIuPTR,
+          cfd->GetName().c_str(), committed_flush_jobs_info);
       break;
     }
     // scan all memtables from the earliest, and commit those
@@ -460,6 +463,9 @@ Status MemTableList::TryInstallMemtableFlushResults(
     // enumerate from the last (earliest) element to see how many batch finished
     for (auto it = memlist.rbegin(); it != memlist.rend(); ++it) {
       MemTable* m = *it;
+      ROCKS_LOG_BUFFER(log_buffer,
+                        "[%s] Level-0 loop table #%" PRIu64 " flush completed %" PRIu8 " loop %" PRIuPTR,
+                        cfd->GetName().c_str(), m->file_number_, m->flush_completed_, committed_flush_jobs_info);
       if (!m->flush_completed_) {
         break;
       }
@@ -482,6 +488,9 @@ Status MemTableList::TryInstallMemtableFlushResults(
 #ifndef ROCKSDB_LITE
         std::unique_ptr<FlushJobInfo> info = m->ReleaseFlushJobInfo();
         if (info != nullptr) {
+          ROCKS_LOG_BUFFER(log_buffer,
+                        "[%s] Level-0 collect job table #%" PRIu64 " earliest seqno %" PRIu64 " %" PRIu64 " loop %" PRIuPTR,
+                        cfd->GetName().c_str(), m->file_number_, m->GetEarliestSequenceNumber(), m->GetLargestSequenceNumber(), committed_flush_jobs_info);
           committed_flush_jobs_info->push_back(std::move(info));
         }
 #else
