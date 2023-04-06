@@ -374,10 +374,14 @@ Status WriteAmpBasedRateLimiter::Tune() {
     percent_delta_ -= 1;
   }
   // React to pace-up requests when LSM is out of shape.
+  bool critical_pace_up = false;
+  bool normal_pace_up = false;
   if (critical_pace_up_.load(std::memory_order_relaxed)) {
+    critical_pace_up = true;
     percent_delta_ = 150;
     critical_pace_up_.store(false, std::memory_order_relaxed);
   } else if (normal_pace_up_.load(std::memory_order_relaxed)) {
+    normal_pace_up = true;
     percent_delta_ =
         std::max(percent_delta_,
                  static_cast<uint32_t>(padding * 150 / new_bytes_per_sec));
@@ -390,6 +394,7 @@ Status WriteAmpBasedRateLimiter::Tune() {
                         max_bytes_per_sec_.load(std::memory_order_relaxed) -
                             highpri_bytes_sampler_.GetRecentValue()));
   if (new_bytes_per_sec != prev_bytes_per_sec) {
+    ROCKS_LOG_INFO(info_log_, "Tun: %lld -> %lld [%lld, %lld, %d, %d]\n", prev_bytes_per_sec, new_bytes_per_sec, duration_bytes_through_, duration_highpri_bytes_through_, normal_pace_up, critical_pace_up);
     SetActualBytesPerSecond(new_bytes_per_sec);
   }
 
