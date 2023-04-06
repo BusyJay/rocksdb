@@ -14,6 +14,7 @@
 #include "rocksdb/env.h"
 #include "test_util/sync_point.h"
 #include "util/aligned_buffer.h"
+#include <iostream>
 
 namespace ROCKSDB_NAMESPACE {
 
@@ -394,7 +395,7 @@ Status WriteAmpBasedRateLimiter::Tune() {
                         max_bytes_per_sec_.load(std::memory_order_relaxed) -
                             highpri_bytes_sampler_.GetRecentValue()));
   if (new_bytes_per_sec != prev_bytes_per_sec) {
-    ROCKS_LOG_INFO(info_log_, "Tun: %lld -> %lld [%lld, %lld, %d, %d]\n", prev_bytes_per_sec, new_bytes_per_sec, duration_bytes_through_, duration_highpri_bytes_through_, normal_pace_up, critical_pace_up);
+    std::cerr << "Tun: " << prev_bytes_per_sec << " -> " << new_bytes_per_sec << " [" << duration_bytes_through_ << ", " << duration_highpri_bytes_through_ << ", " << normal_pace_up << ", " << critical_pace_up << std::endl;
     SetActualBytesPerSecond(new_bytes_per_sec);
   }
 

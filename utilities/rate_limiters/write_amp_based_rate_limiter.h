@@ -123,7 +123,6 @@ class WriteAmpBasedRateLimiter : public RateLimiter {
   std::chrono::microseconds tuned_time_;
   int64_t duration_highpri_bytes_through_;
   int64_t duration_bytes_through_;
-  std::shared_ptr<Logger> info_log;
 
   template <size_t kWindowSize, size_t kRecentWindowSize = 1>
   class WindowSmoother {
