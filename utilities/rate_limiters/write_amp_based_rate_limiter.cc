@@ -328,7 +328,7 @@ Status WriteAmpBasedRateLimiter::Tune() {
   const int64_t kHighBytesLower = 8 << 20;
   // lower bound for write amplification estimation
   const int kRatioLower = 10;
-  const int kPercentDeltaMax = 6;
+  const int kPercentDeltaMax = 2;
 
   std::chrono::microseconds prev_tuned_time = tuned_time_;
   tuned_time_ = std::chrono::microseconds(NowMicrosMonotonic(env_));
@@ -395,7 +395,7 @@ Status WriteAmpBasedRateLimiter::Tune() {
                         max_bytes_per_sec_.load(std::memory_order_relaxed) -
                             highpri_bytes_sampler_.GetRecentValue()));
   if (new_bytes_per_sec != prev_bytes_per_sec) {
-    std::cerr << "Tun: " << prev_bytes_per_sec << " -> " << new_bytes_per_sec << " [" << duration_bytes_through_ << ", " << duration_highpri_bytes_through_ << ", " << normal_pace_up << ", " << critical_pace_up << std::endl;
+    std::cerr << "Tun: " << prev_bytes_per_sec << " -> " << new_bytes_per_sec << " [" << duration_bytes_through_ << ", " << duration_highpri_bytes_through_ << ", " << normal_pace_up << ", " << critical_pace_up << "] by " << duration_ms << std::endl;
     SetActualBytesPerSecond(new_bytes_per_sec);
   }
 
