@@ -42,7 +42,8 @@ constexpr int kMicrosPerTune = 1000 * 1000 * kSecondsPerTune;
 // and special care for low-pressure domain. E.g. coordinates (5M, 18M) and
 // (10M, 16M) are on this curve.
 int64_t CalculatePadding(int64_t base) {
-  return base / 10 + 577464606419583ll / (base + 26225305);
+  return 0;
+  // return base / 10 + 577464606419583ll / (base + 26225305);
 }
 }  // unnamed namespace
 
